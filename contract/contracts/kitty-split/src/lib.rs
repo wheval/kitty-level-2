@@ -50,4 +50,58 @@ impl KittySplit {
         env.storage().instance().set(&DataKey::NextId, &0u64);
         Ok(())
     }
+
+    /// Create a new bill split. `creator` fronts the bill and will receive
+    /// each recipient's share as they pay it.
+    pub fn create_split(
+        env: Env,
+        creator: Address,
+        recipients: Vec<Address>,
+        amounts: Vec<i128>,
+    ) -> Result<u64, Error> {
+        creator.require_auth();
+
+        if recipients.len() != amounts.len() {
+            return Err(Error::RecipientsAmountsMismatch);
+        }
+        if recipients.is_empty() {
+            return Err(Error::EmptySplit);
+        }
+
+        let mut total: i128 = 0;
+        let mut paid: Vec<bool> = Vec::new(&env);
+        for amount in amounts.iter() {
+            total += amount;
+            paid.push_back(false);
+        }
+
+        let id: u64 = env
+            .storage()
+            .instance()
+            .get(&DataKey::NextId)
+            .unwrap_or(0u64);
+
+        let record = SplitRecord {
+            creator,
+            total,
+            recipients,
+            amounts,
+            paid,
+        };
+
+        env.storage().persistent().set(&DataKey::Split(id), &record);
+        env.storage().instance().set(&DataKey::NextId, &(id + 1));
+
+        env.events().publish((CREATED_EVENT, id), record.total);
+
+        Ok(id)
+    }
+
+    /// Read a split record.
+    pub fn get_split(env: Env, split_id: u64) -> Result<SplitRecord, Error> {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Split(split_id))
+            .ok_or(Error::SplitNotFound)
+    }
 }
