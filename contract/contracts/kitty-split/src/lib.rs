@@ -1,23 +1,53 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, vec, Env, String, Vec};
 
-#[contract]
-pub struct Contract;
+use soroban_sdk::{
+    contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, Env,
+    Symbol, Vec,
+};
 
-// This is a sample contract. Replace this placeholder with your own contract logic.
-// A corresponding test example is available in `test.rs`.
-//
-// For comprehensive examples, visit <https://github.com/stellar/soroban-examples>.
-// The repository includes use cases for the Stellar ecosystem, such as data storage on
-// the blockchain, token swaps, liquidity pools, and more.
-//
-// Refer to the official documentation:
-// <https://developers.stellar.org/docs/build/smart-contracts/overview>.
-#[contractimpl]
-impl Contract {
-    pub fn hello(env: Env, to: String) -> Vec<String> {
-        vec![&env, String::from_str(&env, "Hello"), to]
-    }
+#[contracttype]
+#[derive(Clone)]
+pub struct SplitRecord {
+    pub creator: Address,
+    pub total: i128,
+    pub recipients: Vec<Address>,
+    pub amounts: Vec<i128>,
+    pub paid: Vec<bool>,
 }
 
-mod test;
+#[contracttype]
+pub enum DataKey {
+    NativeToken,
+    NextId,
+    Split(u64),
+}
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum Error {
+    AlreadyInitialized = 1,
+    NotInitialized = 2,
+    RecipientsAmountsMismatch = 3,
+    EmptySplit = 4,
+    SplitNotFound = 5,
+    NotARecipient = 6,
+    AlreadyPaid = 7,
+}
+
+const PAID_EVENT: Symbol = symbol_short!("paid");
+const CREATED_EVENT: Symbol = symbol_short!("created");
+
+#[contract]
+pub struct KittySplit;
+
+#[contractimpl]
+impl KittySplit {
+    pub fn initialize(env: Env, native_token: Address) -> Result<(), Error> {
+        if env.storage().instance().has(&DataKey::NativeToken) {
+            return Err(Error::AlreadyInitialized);
+        }
+        env.storage().instance().set(&DataKey::NativeToken, &native_token);
+        env.storage().instance().set(&DataKey::NextId, &0u64);
+        Ok(())
+    }
+}
