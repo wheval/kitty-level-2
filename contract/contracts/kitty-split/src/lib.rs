@@ -104,4 +104,46 @@ impl KittySplit {
             .get(&DataKey::Split(split_id))
             .ok_or(Error::SplitNotFound)
     }
+
+    /// Pay your share of a split. `payer` must be one of the recipients and
+    /// must not have paid yet. Transfers native XLM from payer to creator.
+    pub fn pay_share(env: Env, split_id: u64, payer: Address) -> Result<(), Error> {
+        payer.require_auth();
+
+        let mut record: SplitRecord = env
+            .storage()
+            .persistent()
+            .get(&DataKey::Split(split_id))
+            .ok_or(Error::SplitNotFound)?;
+
+        let mut index: Option<u32> = None;
+        for i in 0..record.recipients.len() {
+            if record.recipients.get(i).unwrap() == payer {
+                index = Some(i);
+                break;
+            }
+        }
+        let index = index.ok_or(Error::NotARecipient)?;
+
+        if record.paid.get(index).unwrap() {
+            return Err(Error::AlreadyPaid);
+        }
+
+        let native_token: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::NativeToken)
+            .ok_or(Error::NotInitialized)?;
+
+        let amount = record.amounts.get(index).unwrap();
+        let token_client = token::Client::new(&env, &native_token);
+        token_client.transfer(&payer, &record.creator, &amount);
+
+        record.paid.set(index, true);
+        env.storage().persistent().set(&DataKey::Split(split_id), &record);
+
+        env.events().publish((PAID_EVENT, split_id), (payer, amount));
+
+        Ok(())
+    }
 }
