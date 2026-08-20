@@ -1,22 +1,19 @@
-# Soroban Project
+# Kitty Split — Soroban contract
 
-## Project Structure
+Tracks a group bill split on-chain: a creator fronts an expense, recipients each pay their own share directly to the creator in native XLM.
 
-This repository uses the recommended structure for a Soroban project:
+- Source: `contracts/kitty-split/src/lib.rs`
+- Tests: `contracts/kitty-split/src/test.rs` (`cargo test`)
+- Deployment details, contract ID, and example transaction hashes: [`DEPLOYMENT.md`](DEPLOYMENT.md)
 
-```text
-.
-├── contracts
-│   └── hello_world
-│       ├── src
-│       │   ├── lib.rs
-│       │   └── test.rs
-│       └── Cargo.toml
-├── Cargo.toml
-└── README.md
+## Build
+
+```bash
+cargo build --target wasm32v1-none --release
 ```
 
-- New Soroban contracts can be put in `contracts`, each in their own directory. There is already a `hello_world` contract in there to get you started.
-- If you initialized this project with any other example contracts via `--with-example`, those contracts will be in the `contracts` directory as well.
-- Contracts should have their own `Cargo.toml` files that rely on the top-level `Cargo.toml` workspace for their dependencies.
-- Frontend libraries can be added to the top-level directory as well. If you initialized this project with a frontend template via `--frontend-template` you will have those files already included.
+## Test
+
+```bash
+cargo test
+```
