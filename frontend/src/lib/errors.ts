@@ -9,8 +9,22 @@ export type KittyError = {
   message: string
 }
 
+function extractMessage(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'string') return err
+  if (
+    err &&
+    typeof err === 'object' &&
+    'message' in err &&
+    typeof (err as { message: unknown }).message === 'string'
+  ) {
+    return (err as { message: string }).message
+  }
+  return 'Something went wrong.'
+}
+
 export function classifyError(err: unknown): KittyError {
-  const raw = err instanceof Error ? err.message : String(err)
+  const raw = extractMessage(err)
   const lower = raw.toLowerCase()
 
   if (
@@ -30,6 +44,7 @@ export function classifyError(err: unknown): KittyError {
     lower.includes('declined') ||
     lower.includes('user cancelled') ||
     lower.includes('user canceled') ||
+    lower.includes('closed') ||
     lower.includes('denied')
   ) {
     return {
