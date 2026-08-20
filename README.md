@@ -2,6 +2,8 @@
 
 Split a bill, settle it on-chain — a Soroban smart contract, multi-wallet support, and real-time event-driven status.
 
+**Live demo:** https://kitty-level-2.vercel.app
+
 - **App + full write-up (start here):** [`frontend/README.md`](frontend/README.md) — setup instructions, contract address, transaction hash, and screenshots.
 - **Contract source:** [`contract/contracts/kitty-split`](contract/contracts/kitty-split)
 - **Deployment details:** [`contract/DEPLOYMENT.md`](contract/DEPLOYMENT.md)

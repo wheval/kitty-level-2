@@ -4,6 +4,8 @@ Split a bill, settle it on-chain — now with a real Soroban smart contract, mul
 
 Level 1 sent a plain XLM payment between two wallets. Level 2 moves the actual bill-splitting logic on-chain: a `KittySplit` Soroban contract tracks who owes what, each recipient pays their own share from their own wallet, and the whole app watches the contract's events to update in real time — no manual refreshing needed.
 
+**Live demo:** https://kitty-level-2.vercel.app
+
 ## What it does
 
 - Connect any of several wallets (Freighter, xBull, Albedo, Lobstr, Rabet, Hana) via **StellarWalletsKit**
