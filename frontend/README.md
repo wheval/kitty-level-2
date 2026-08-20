@@ -71,7 +71,7 @@ See [`../contract/DEPLOYMENT.md`](../contract/DEPLOYMENT.md) for the full deploy
 
 - [x] **Wallet options available** (StellarWalletsKit modal)
 
-  ![Wallet options](screenshots/01-wallet-options.jpg)
+  ![Wallet options](screenshots/00-wallet-options-live.png)
 
 - [x] **Split state read from the contract** (`get_split`, real testnet data — one recipient paid, one pending)
 
