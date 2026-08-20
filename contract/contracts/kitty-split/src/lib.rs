@@ -147,3 +147,5 @@ impl KittySplit {
         Ok(())
     }
 }
+
+mod test;
