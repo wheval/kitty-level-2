@@ -1,26 +1,15 @@
 import { Buffer } from "buffer";
-import { Address } from "@stellar/stellar-sdk";
 import {
-  AssembledTransaction,
   Client as ContractClient,
-  ClientOptions as ContractClientOptions,
-  MethodOptions,
-  Result,
   Spec as ContractSpec,
 } from "@stellar/stellar-sdk/contract";
 import type {
-  u32,
-  i32,
-  u64,
-  i64,
-  u128,
-  i128,
-  u256,
-  i256,
-  Option,
-  Timepoint,
-  Duration,
+  AssembledTransaction,
+  ClientOptions as ContractClientOptions,
+  MethodOptions,
+  Result,
 } from "@stellar/stellar-sdk/contract";
+import type { u64, i128 } from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
 export * as contract from "@stellar/stellar-sdk/contract";
 export * as rpc from "@stellar/stellar-sdk/rpc";
@@ -101,7 +90,8 @@ export class Client extends ContractClient {
   ): Promise<AssembledTransaction<T>> {
     return ContractClient.deploy(null, options)
   }
-  constructor(public readonly options: ContractClientOptions) {
+  public readonly options: ContractClientOptions;
+  constructor(options: ContractClientOptions) {
     super(
       new ContractSpec([ "AAAABAAAAAAAAAAAAAAABUVycm9yAAAAAAAABwAAAAAAAAASQWxyZWFkeUluaXRpYWxpemVkAAAAAAABAAAAAAAAAA5Ob3RJbml0aWFsaXplZAAAAAAAAgAAAAAAAAAZUmVjaXBpZW50c0Ftb3VudHNNaXNtYXRjaAAAAAAAAAMAAAAAAAAACkVtcHR5U3BsaXQAAAAAAAQAAAAAAAAADVNwbGl0Tm90Rm91bmQAAAAAAAAFAAAAAAAAAA1Ob3RBUmVjaXBpZW50AAAAAAAABgAAAAAAAAALQWxyZWFkeVBhaWQAAAAABw==",
         "AAAAAgAAAAAAAAAAAAAAB0RhdGFLZXkAAAAAAwAAAAAAAAAAAAAAC05hdGl2ZVRva2VuAAAAAAAAAAAAAAAABk5leHRJZAAAAAAAAQAAAAAAAAAFU3BsaXQAAAAAAAABAAAABg==",
@@ -112,6 +102,7 @@ export class Client extends ContractClient {
         "AAAAAAAAAGpDcmVhdGUgYSBuZXcgYmlsbCBzcGxpdC4gYGNyZWF0b3JgIGZyb250cyB0aGUgYmlsbCBhbmQgd2lsbCByZWNlaXZlCmVhY2ggcmVjaXBpZW50J3Mgc2hhcmUgYXMgdGhleSBwYXkgaXQuAAAAAAAMY3JlYXRlX3NwbGl0AAAAAwAAAAAAAAAHY3JlYXRvcgAAAAATAAAAAAAAAApyZWNpcGllbnRzAAAAAAPqAAAAEwAAAAAAAAAHYW1vdW50cwAAAAPqAAAACwAAAAEAAAPpAAAABgAAAAM=" ]),
       options
     )
+    this.options = options;
   }
   public readonly fromJSON = {
     get_split: this.txFromJSON<Result<SplitRecord>>,
